@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 
 const UserRepository = require("../repository/user-repository");
 const { JWT_KEY } = require("../config/serverConfig");
+const AppErrors = require("../utils/errorHandling/error-handler");
 
 class UserService {
   constructor() {
@@ -11,10 +12,19 @@ class UserService {
 
   async create(data) {
     try {
+      // const duplicateUser = await this.userRepository.getByEmail(data.email);
+      // // console.log(duplicateUser);
+      // if (duplicateUser) {
+      //   throw { name: "ServerError", message: "User already exists", explanation: "Logical Issue", statusCode: 500 };
+      // }
       const user = await this.userRepository.create(data);
       return user;
     } catch (error) {
+      if (error.name == "SequelizeValidationError") {
+        throw error;
+      }
       console.log("Something went wrong in the service layer");
+      // throw new AppErrors("ServerError", "Something went wrong in service", "Logical Issue found", 500);
       throw error;
     }
   }

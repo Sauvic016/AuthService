@@ -15,12 +15,12 @@ const create = async (req, res) => {
       err: {},
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
+    // console.log(error);
+    return res.status(error.statusCode).json({
       data: {},
-      message: "Something went wrong",
+      message: error.message,
       success: false,
-      err: error,
+      err: error.explanation,
     });
   }
 };
@@ -76,7 +76,6 @@ const isAdmin = async (req, res) => {
       message: "Successfully fetched whether user is admin or not",
     });
   } catch (error) {
-    console.log(error, "hii");
     return res.status(500).json({
       data: {},
       message: "Something went wrong",
