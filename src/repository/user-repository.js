@@ -1,15 +1,26 @@
 const { User, Role } = require("../models/index");
-const ValidationError = require("../utils/errorHandling/ClientErrors/validation-error.js");
+const {
+  ValidationError,
+  DuplicateEntryError,
+  UserNotFoundError,
+} = require("../utils/errorHandling/ClientErrors/index.js");
 
 class UserRepository {
   async create(data) {
     try {
+      const duplicateEntry = await this.getByEmail(data.email);
+      if (duplicateEntry) {
+        throw new DuplicateEntryError();
+      }
       const user = await User.create(data);
       return user;
     } catch (error) {
       if (error.name == "SequelizeValidationError") {
         throw new ValidationError(error);
       }
+      // if (error.name == "SequelizeUniqueConstraintError") {
+      //   throw new DuplicateEntryError(error);
+      // }
       console.log("Something went wrong on repository layer");
       throw error;
     }
@@ -34,6 +45,9 @@ class UserRepository {
       const user = await User.findByPk(userId, {
         attributes: ["email", "id"],
       });
+      if (!user) {
+        throw new UserNotFoundError(userId);
+      }
       return user;
     } catch (error) {
       console.log("Something went wrong on repository layer");
@@ -48,6 +62,9 @@ class UserRepository {
           email: userEmail,
         },
       });
+      if (!user) {
+        throw new UserNotFoundError();
+      }
       return user;
     } catch (error) {
       console.log("Something went wrong on repository layer");

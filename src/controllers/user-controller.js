@@ -15,7 +15,6 @@ const create = async (req, res) => {
       err: {},
     });
   } catch (error) {
-    // console.log(error);
     return res.status(error.statusCode).json({
       data: {},
       message: error.message,
@@ -35,12 +34,11 @@ const signIn = async (req, res) => {
       err: {},
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
+    return res.status(error.statusCode).json({
       data: {},
-      message: "Something went wrong",
+      message: error.message,
       success: false,
-      err: error,
+      err: error.explanation,
     });
   }
 };
@@ -56,12 +54,11 @@ const isAuthenticated = async (req, res) => {
       message: "User is authenticated and token is valid",
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
+    return res.status(error.statusCode).json({
       data: {},
-      message: "Something went wrong",
+      message: error.message,
       success: false,
-      err: error,
+      err: error.explanation,
     });
   }
 };

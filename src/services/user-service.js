@@ -3,7 +3,9 @@ const bcrypt = require("bcrypt");
 
 const UserRepository = require("../repository/user-repository");
 const { JWT_KEY } = require("../config/serverConfig");
-const AppErrors = require("../utils/errorHandling/error-handler");
+const ServiceError = require("../utils/errorHandling/Service-error");
+
+const { PasswordMismatchError, TokenVerificationError } = require("../utils/errorHandling/ClientErrors/index");
 
 class UserService {
   constructor() {
@@ -12,20 +14,18 @@ class UserService {
 
   async create(data) {
     try {
-      // const duplicateUser = await this.userRepository.getByEmail(data.email);
-      // // console.log(duplicateUser);
-      // if (duplicateUser) {
-      //   throw { name: "ServerError", message: "User already exists", explanation: "Logical Issue", statusCode: 500 };
-      // }
       const user = await this.userRepository.create(data);
       return user;
     } catch (error) {
       if (error.name == "SequelizeValidationError") {
         throw error;
       }
-      console.log("Something went wrong in the service layer");
-      // throw new AppErrors("ServerError", "Something went wrong in service", "Logical Issue found", 500);
-      throw error;
+      if (error.name == "DuplicateEntryError") {
+        throw error;
+      }
+      // console.log("Something went wrong in the service layer");
+      // throw error;
+      throw new ServiceError();
     }
   }
 
@@ -37,30 +37,27 @@ class UserService {
       const passwordsMatch = this.#checkPassword(plainPassword, user.password);
 
       if (!passwordsMatch) {
-        console.log("Password doesn't match");
-        throw { error: "Incorrect Password" };
+        throw new PasswordMismatchError();
       }
       // step 3-> if passwords match then create a token and send it to the user
       const newJWT = this.#createToken({ email: user.email, id: user.id });
       return newJWT;
     } catch (error) {
-      console.log("Something went wrong in the sign in process");
-      throw error;
+      if (error.name == "PasswordMismatchError") {
+        throw error;
+      }
+      throw new ServiceError();
     }
   }
   async isAuthenticated(token) {
     try {
       const response = this.#verifyToken(token);
-      if (!response) {
-        throw { error: "Invalid token" };
-      }
       const user = await this.userRepository.getById(response.id);
-      if (!user) {
-        throw { error: "No user with the corresponding token exists" };
-      }
       return user.id;
     } catch (error) {
-      console.log("Something went wrong in the auth process");
+      if (!error.name) {
+        throw new ServiceError();
+      }
       throw error;
     }
   }
@@ -79,7 +76,10 @@ class UserService {
       const response = jwt.verify(token, JWT_KEY);
       return response;
     } catch (error) {
-      console.log("Something went wrong in token validation", error);
+      if ((error.name = "JsonWebTokenError")) {
+        throw new TokenVerificationError();
+      }
+      console.log("Something went wrong in token validation");
       throw error;
     }
   }
