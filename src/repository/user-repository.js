@@ -8,20 +8,20 @@ const {
 class UserRepository {
   async create(data) {
     try {
-      const duplicateEntry = await this.getByEmail(data.email);
-      if (duplicateEntry) {
-        throw new DuplicateEntryError();
-      }
+      // const duplicateEntry = await this.getByEmail(data.email);
+      // if (duplicateEntry) {
+      //   throw new DuplicateEntryError();
+      // }
       const user = await User.create(data);
       return user;
     } catch (error) {
       if (error.name == "SequelizeValidationError") {
         throw new ValidationError(error);
       }
-      // if (error.name == "SequelizeUniqueConstraintError") {
-      //   throw new DuplicateEntryError(error);
-      // }
-      console.log("Something went wrong on repository layer");
+      if (error.name == "SequelizeUniqueConstraintError") {
+        throw new DuplicateEntryError(error);
+      }
+      console.log("Something went wrong on repositoryi layer");
       throw error;
     }
   }
