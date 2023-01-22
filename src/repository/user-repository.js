@@ -81,12 +81,23 @@ class UserRepository {
     }
   }
 
-  // async verifyEmailToken(token){
-  //   try {
-
-  //   } catch (error) {
-
-  //   }
-  // }
+  async verifyEmailToken(token) {
+    try {
+      const user = await User.findOne({
+        where: {
+          emailToken: token,
+        },
+      });
+      if (!user) {
+        throw new UserNotFoundError();
+      }
+      user.userStatus = "Active";
+      await user.save();
+      return user;
+    } catch (error) {
+      console.log("Something went wrong on repository layer");
+      throw error;
+    }
+  }
 }
 module.exports = UserRepository;
