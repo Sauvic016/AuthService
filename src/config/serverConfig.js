@@ -9,4 +9,5 @@ module.exports = {
   JWT_KEY: process.env.JWT_KEY,
   EMAIL_ID: process.env.EMAIL_ID,
   EMAIL_PASS: process.env.EMAIL_PASS,
+  BASE_URL: process.env.BASE_URL,
 };

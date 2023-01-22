@@ -5,7 +5,12 @@ const UserRepository = require("../repository/user-repository");
 const { JWT_KEY } = require("../config/serverConfig");
 const ServiceError = require("../utils/errorHandling/Service-error");
 
-const { PasswordMismatchError, TokenVerificationError } = require("../utils/errorHandling/ClientErrors/index");
+const {
+  PasswordMismatchError,
+  TokenVerificationError,
+  UserNotFoundError,
+  DuplicateEntryError,
+} = require("../utils/errorHandling/ClientErrors/index");
 
 class UserService {
   constructor() {
@@ -14,6 +19,11 @@ class UserService {
 
   async create(data) {
     try {
+      const duplicateEntry = await this.userRepository.getByEmail(data.email);
+      if (duplicateEntry) {
+        //todo:  custom message to user after checking email verification status
+        throw new DuplicateEntryError("User already exists please signin");
+      }
       const user = await this.userRepository.create(data);
       return user;
     } catch (error) {
@@ -23,8 +33,9 @@ class UserService {
       if (error.name == "DuplicateEntryError") {
         throw error;
       }
-      // console.log("Something went wrong in the service layer");
-      // throw error;
+      if (error.name == "EmailServiceError") {
+        throw error;
+      }
       throw new ServiceError();
     }
   }
@@ -33,6 +44,9 @@ class UserService {
     try {
       // step 1-> fetch the user using the email
       const user = await this.userRepository.getByEmail(email);
+      if (!user) {
+        throw new UserNotFoundError();
+      }
       // step 2-> compare incoming plain password with the stored encrypted password
       const passwordsMatch = this.#checkPassword(plainPassword, user.password);
 
@@ -44,6 +58,9 @@ class UserService {
       return newJWT;
     } catch (error) {
       if (error.name == "PasswordMismatchError") {
+        throw error;
+      }
+      if (error.name == "UserNotFoundError") {
         throw error;
       }
       throw new ServiceError();

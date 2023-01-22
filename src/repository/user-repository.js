@@ -4,15 +4,13 @@ const {
   DuplicateEntryError,
   UserNotFoundError,
 } = require("../utils/errorHandling/ClientErrors/index.js");
+const sendVerificationMail = require("../utils/helpers/send-email");
 
 class UserRepository {
   async create(data) {
     try {
-      // const duplicateEntry = await this.getByEmail(data.email);
-      // if (duplicateEntry) {
-      //   throw new DuplicateEntryError();
-      // }
       const user = await User.create(data);
+      sendVerificationMail(user.userName, user.email, user.emailToken);
       return user;
     } catch (error) {
       if (error.name == "SequelizeValidationError") {
@@ -21,7 +19,7 @@ class UserRepository {
       if (error.name == "SequelizeUniqueConstraintError") {
         throw new DuplicateEntryError(error);
       }
-      console.log("Something went wrong on repositoryi layer");
+      console.log("Something went wrong on repository layer");
       throw error;
     }
   }
@@ -62,9 +60,6 @@ class UserRepository {
           email: userEmail,
         },
       });
-      if (!user) {
-        throw new UserNotFoundError();
-      }
       return user;
     } catch (error) {
       console.log("Something went wrong on repository layer");
@@ -85,5 +80,13 @@ class UserRepository {
       throw error;
     }
   }
+
+  // async verifyEmailToken(token){
+  //   try {
+
+  //   } catch (error) {
+
+  //   }
+  // }
 }
 module.exports = UserRepository;
