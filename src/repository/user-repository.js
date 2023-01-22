@@ -4,23 +4,21 @@ const {
   DuplicateEntryError,
   UserNotFoundError,
 } = require("../utils/errorHandling/ClientErrors/index.js");
+const sendVerificationMail = require("../utils/helpers/send-email");
 
 class UserRepository {
   async create(data) {
     try {
-      const duplicateEntry = await this.getByEmail(data.email);
-      if (duplicateEntry) {
-        throw new DuplicateEntryError();
-      }
       const user = await User.create(data);
+      sendVerificationMail(user.userName, user.email, user.emailToken);
       return user;
     } catch (error) {
       if (error.name == "SequelizeValidationError") {
         throw new ValidationError(error);
       }
-      // if (error.name == "SequelizeUniqueConstraintError") {
-      //   throw new DuplicateEntryError(error);
-      // }
+      if (error.name == "SequelizeUniqueConstraintError") {
+        throw new DuplicateEntryError(error);
+      }
       console.log("Something went wrong on repository layer");
       throw error;
     }
@@ -62,9 +60,6 @@ class UserRepository {
           email: userEmail,
         },
       });
-      if (!user) {
-        throw new UserNotFoundError();
-      }
       return user;
     } catch (error) {
       console.log("Something went wrong on repository layer");
@@ -80,6 +75,25 @@ class UserRepository {
         },
       });
       return user.hasRole(adminRole);
+    } catch (error) {
+      console.log("Something went wrong on repository layer");
+      throw error;
+    }
+  }
+
+  async verifyEmailToken(token) {
+    try {
+      const user = await User.findOne({
+        where: {
+          emailToken: token,
+        },
+      });
+      if (!user) {
+        throw new UserNotFoundError();
+      }
+      user.userStatus = "Active";
+      await user.save();
+      return user;
     } catch (error) {
       console.log("Something went wrong on repository layer");
       throw error;

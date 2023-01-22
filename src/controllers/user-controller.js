@@ -5,6 +5,7 @@ const userService = new UserService();
 const create = async (req, res) => {
   try {
     const response = await userService.create({
+      userName: req.body.userName,
       email: req.body.email,
       password: req.body.password,
     });
@@ -81,10 +82,30 @@ const isAdmin = async (req, res) => {
     });
   }
 };
+const verifyEmailToken = async (req, res) => {
+  try {
+    const response = await userService.verifyEmailToken(req.query.token);
+    return res.status(201).json({
+      success: true,
+      message: "Email has been verified",
+      data: response,
+      err: {},
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(err.statusCode).json({
+      success: false,
+      message: error.message,
+      err: error.explanation,
+      data: {},
+    });
+  }
+};
 
 module.exports = {
   create,
   signIn,
   isAuthenticated,
   isAdmin,
+  verifyEmailToken,
 };
