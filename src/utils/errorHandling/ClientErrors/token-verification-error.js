@@ -7,7 +7,7 @@ class TokenVerificationError extends AppErrors {
       name: "TokenVerificationError",
       message: "Invalid token, please sign in again.",
       explanation: "Incorrect Token Provided",
-      statusCode: StatusCodes.FORBIDDEN,
+      statusCode: StatusCodes.UNAUTHORIZED,
     };
     super(error.name, error.message, error.explanation, error.statusCode);
   }
