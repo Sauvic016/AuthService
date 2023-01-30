@@ -9,14 +9,14 @@ class UserNotFoundError extends AppError {
         name: "UserNotFoundError",
         message: "Email not found. Please double-check the email you entered or sign up for a new account.",
         explanation: "Incorrect Email id Entered",
-        statusCode: StatusCodes.FORBIDDEN,
+        statusCode: StatusCodes.NOT_FOUND,
       };
     } else {
       error = {
         name: "UserNotFoundError",
-        message: "UserId not Found",
+        message: "User not Found",
         explanation: "Incorrect UserId Entered",
-        statusCode: StatusCodes.FORBIDDEN,
+        statusCode: StatusCodes.NOT_FOUND,
       };
     }
 

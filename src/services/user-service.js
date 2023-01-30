@@ -138,6 +138,18 @@ class UserService {
       throw new ServiceError();
     }
   }
+
+  async getEmailById(id) {
+    try {
+      const response = await this.userRepository.getById(id);
+      return response.email;
+    } catch (error) {
+      if (error.name == "UserNotFoundError") {
+        throw error;
+      }
+      throw new ServiceError();
+    }
+  }
 }
 
 module.exports = UserService;

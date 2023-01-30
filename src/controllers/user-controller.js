@@ -93,7 +93,27 @@ const verifyEmailToken = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res.status(err.statusCode).json({
+    return res.status(error.statusCode).json({
+      success: false,
+      message: error.message,
+      err: error.explanation,
+      data: {},
+    });
+  }
+};
+
+const getEmailById = async (req, res) => {
+  try {
+    const response = await userService.getEmailById(req.params.id);
+    return res.status(200).json({
+      success: true,
+      message: "Successfully fetched the user details",
+      data: response,
+      err: {},
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(error.statusCode).json({
       success: false,
       message: error.message,
       err: error.explanation,
@@ -108,4 +128,5 @@ module.exports = {
   isAuthenticated,
   isAdmin,
   verifyEmailToken,
+  getEmailById,
 };

@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+// const listEndpoints = require("express-list-endpoints");
 
 const { PORT } = require("./config/serverConfig");
 const apiRoutes = require("./routes/index");
@@ -14,6 +15,7 @@ const prepareAndStartServer = async () => {
 
   app.use("/api", apiRoutes);
 
+  // console.log(listEndpoints(app));
   app.listen(PORT, async () => {
     console.log(`Server started at Port: ${PORT}`);
     if (process.env.DB_SYNC) {
