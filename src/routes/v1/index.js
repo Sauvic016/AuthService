@@ -11,6 +11,6 @@ router.post("/signin", AuthRequestValidators.validateUserAuth, UserController.si
 router.get("/isAuthenticated", UserController.isAuthenticated);
 router.get("/isAdmin", AuthRequestValidators.validateIsAdminRequest, UserController.isAdmin);
 router.get("/verify-email", UserController.verifyEmailToken);
-router.get("/users/:id", UserController.getEmailById);
+router.get("/users/:id", UserController.getUserById);
 
 module.exports = router;

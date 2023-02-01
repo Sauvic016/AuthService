@@ -102,9 +102,9 @@ const verifyEmailToken = async (req, res) => {
   }
 };
 
-const getEmailById = async (req, res) => {
+const getUserById = async (req, res) => {
   try {
-    const response = await userService.getEmailById(req.params.id);
+    const response = await userService.getUserById(req.params.id);
     return res.status(200).json({
       success: true,
       message: "Successfully fetched the user details",
@@ -128,5 +128,5 @@ module.exports = {
   isAuthenticated,
   isAdmin,
   verifyEmailToken,
-  getEmailById,
+  getUserById,
 };

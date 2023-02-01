@@ -139,10 +139,10 @@ class UserService {
     }
   }
 
-  async getEmailById(id) {
+  async getUserById(id) {
     try {
       const response = await this.userRepository.getById(id);
-      return response.email;
+      return response;
     } catch (error) {
       if (error.name == "UserNotFoundError") {
         throw error;
