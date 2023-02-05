@@ -1,3 +1,4 @@
+const { StatusCodes } = require("http-status-codes");
 const UserService = require("../services/user-service");
 
 const userService = new UserService();
@@ -121,6 +122,25 @@ const getUserById = async (req, res) => {
     });
   }
 };
+const grantRole = async (req, res) => {
+  try {
+    const response = await userService.grantRole(req.body.userId, req.body.roleId);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Role Granted",
+      data: response,
+      err: {},
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(error.statusCode).json({
+      success: false,
+      message: error.message,
+      err: error.explanation,
+      data: {},
+    });
+  }
+};
 
 module.exports = {
   create,
@@ -129,4 +149,5 @@ module.exports = {
   isAdmin,
   verifyEmailToken,
   getUserById,
+  grantRole,
 };

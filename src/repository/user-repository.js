@@ -4,6 +4,7 @@ const {
   DuplicateEntryError,
   UserNotFoundError,
 } = require("../utils/errorHandling/ClientErrors/index.js");
+const AppError = require("../utils/errorHandling/error-handler");
 const sendVerificationMail = require("../utils/helpers/send-email");
 
 class UserRepository {
@@ -96,6 +97,24 @@ class UserRepository {
       return user;
     } catch (error) {
       console.log("Something went wrong on repository layer");
+      throw error;
+    }
+  }
+
+  async grantRole(userId, roleId) {
+    try {
+      const user = await User.findByPk(userId);
+      if (!user) {
+        throw new UserNotFoundError();
+      }
+      const role = await Role.findByPk(roleId);
+      if (!role) {
+        throw new AppError("RoleNotFoundError", "User role does not exist", "Invalid roleId");
+      }
+      user.addRole(role);
+      return true;
+    } catch (error) {
+      console.log("Something went wrong in the repository layer!");
       throw error;
     }
   }

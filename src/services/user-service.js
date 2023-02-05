@@ -150,6 +150,18 @@ class UserService {
       throw new ServiceError();
     }
   }
+  async grantRole(userId, roleId) {
+    try {
+      console.log(userId, roleId);
+      const response = await this.userRepository.grantRole(userId, roleId);
+      return response;
+    } catch (error) {
+      if (error.name) {
+        throw error;
+      }
+      throw new ServiceError();
+    }
+  }
 }
 
 module.exports = UserService;
