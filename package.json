@@ -21,7 +21,7 @@
     "nodemailer": "^6.9.0",
     "nodemon": "^2.0.20",
     "randombytes": "^2.1.0",
-    "sequelize": "^6.28.0",
+    "sequelize": "^6.28.2",
     "sequelize-cli": "^6.5.2"
   }
 }
