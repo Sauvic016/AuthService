@@ -57,9 +57,9 @@ class UserService {
         throw new PasswordMismatchError();
       }
 
-      if (user.userStatus != "Active") {
-        throw new AppError("UserNotVerified", "User Email is not verified", "Verify you email", 403);
-      }
+      // if (user.userStatus != "Active") {
+      //   throw new AppError("UserNotVerified", "User Email is not verified", "Verify you email", 403);
+      // }
       // step 3-> if passwords match then create a token and send it to the user
       const newJWT = this.#createToken({ email: user.email, id: user.id });
       return newJWT;
@@ -80,7 +80,7 @@ class UserService {
     try {
       const response = this.#verifyToken(token);
       const user = await this.userRepository.getById(response.id);
-      return user.id;
+      return user;
     } catch (error) {
       if (!error.name) {
         throw new ServiceError();

@@ -15,7 +15,7 @@ const prepareAndStartServer = async () => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
 
-  app.use("/api", apiRoutes);
+  app.use("/authservice/api", apiRoutes);
 
   // console.log(listEndpoints(app));
   app.listen(PORT, async () => {
