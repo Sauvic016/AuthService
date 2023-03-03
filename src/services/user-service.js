@@ -152,7 +152,6 @@ class UserService {
   }
   async grantRole(userId, roleId) {
     try {
-      console.log(userId, roleId);
       const response = await this.userRepository.grantRole(userId, roleId);
       return response;
     } catch (error) {
