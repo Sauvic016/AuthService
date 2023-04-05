@@ -62,7 +62,7 @@ class UserService {
       // }
       // step 3-> if passwords match then create a token and send it to the user
       const newJWT = this.#createToken({ email: user.email, id: user.id });
-      return newJWT;
+      return { id: user.id, token: newJWT, username: user.userName, email: user.email, status: user.userStatus };
     } catch (error) {
       if (error.name == "PasswordMismatchError") {
         throw error;
